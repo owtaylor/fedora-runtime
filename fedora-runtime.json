@@ -1,0 +1,42 @@
+{
+    "ref": "base/org.fedoraproject.Platform/x86_64/22",
+
+    "repos": ["fedora-22"],
+
+    "selinux": false,
+
+    "documentation": false,
+
+    "container": true,
+
+    "automatic_version_prefix": "22",
+
+    "install-langs": ["en_US"],
+
+    "postprocess-script": "treecompose-post.sh",
+
+    "etc-group-members": ["wheel"],
+
+    "ignore-removed-users": ["root"],
+    "ignore-removed-groups": ["root"],
+    "check-passwd": { "type": "file", "filename": "passwd" },
+    "check-groups": { "type": "file", "filename": "group" },
+
+    "packages": ["glibc", "nss-altfiles",
+		 "fedora-release",
+		 "btrfs-progs",
+		 "gnupg2",
+		 "basesystem",
+		 "bash",
+		 "xz", "gzip", "bzip2",
+		 "coreutils",
+		 "which",
+		 "curl",
+		 "hostname",
+		 "passwd",
+		 "rootfiles",
+                 "rpm",
+		 "setup",
+		 "util-linux",
+                 "findutils"]
+}
