@@ -38,5 +38,20 @@
                  "rpm",
 		 "setup",
 		 "util-linux",
-                 "findutils"]
+                 "findutils",
+		 "abattis-cantarell-fonts",
+		 "dejavu-sans-fonts", "dejavu-serif-fonts", "dejavu-lgc-sans-fonts", "dejavu-lgc-serif-fonts", "dejavu-sans-mono-fonts", "dejavu-lgc-sans-mono-fonts",
+		 "gnu-free-serif-fonts", "gnu-free-mono-fonts", "gnu-free-sans-fonts", "google-crosextra-caladea-fonts", "google-crosextra-carlito-fonts",
+		 "liberation-fonts-common", "liberation-mono-fonts", "liberation-narrow-fonts", "liberation-sans-fonts", "liberation-serif-fonts",
+		 "libICE", "libSM", "libX11", "libXScrnSaver", "libXau", "libXcomposite", "libXcursor", "libXdamage", "libXext", "libXfixes", "libXft", "libXi", "libXinerama", "libXpm", "libXrandr", "libXrender", "libXt", "libXtst", "libXv", "libXxf86vm", "libxkbcommon-x11",
+		 "mesa-libEGL", "mesa-libglapi", "mesa-libgbm", "mesa-libwayland-egl", "mesa-libGL", "mesa-dri-drivers",
+		 "pulseaudio-libs", "pulseaudio-libs-glib2",
+		 "gtk2", "gtk2-immodules", "gtk3", "gtk3-immodules",
+		 "clutter", "clutter-gtk",
+		 "adwaita-icon-theme", "gnome-themes-standard", "gsettings-desktop-schemas",
+		 "gobject-introspection", "dbus-glib", "dconf", "gjs", "json-glib", "librsvg2", "libsecret", "webkitgtk4", "enchant", "libproxy", "avahi-glib",
+		 "zenity", "desktop-file-utils", "attr", "bzip2", "elfutils", "less", "libatomic_ops", "libexif", "libtool-ltdl", "libsamplerate", "speex", "tar", "unzip",
+		 "SDL2", "SDL2_image", "SDL2_net", "SDL2_mixer", "SDL2_ttf",
+		 "perl", "python3", "python3-cairo", "python3-gobject"
+		]
 }
