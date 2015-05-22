@@ -3,4 +3,4 @@ runtime=org.fedoraproject.Platform/x86_64/22
 sdk=org.fedoraproject.Sdk/x86_64/22
 
 [Environment Vars]
-LD_LIBRARY_PATH=/self/lib64
+LD_LIBRARY_PATH=/app/lib64
