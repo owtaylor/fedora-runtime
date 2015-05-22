@@ -28,7 +28,9 @@ repo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION): repo/
 	rm -rf platform-var
 	mkdir -p platform-var
 	cp metadata.platform platform-var/metadata
-	ostree checkout --repo=repo --subpath=/usr -U base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) platform-var/files
+	ostree checkout --repo=repo --subpath=/var -U base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) platform-var/files
+	mkdir -p platform-var/files/lib
+	ostree checkout --repo=repo --subpath=/usr/share/rpm -U base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) platform-var/files/lib/rpm
 	ostree commit --repo=repo --no-xattrs --owner-uid=0 --owner-gid=0 --link-checkout-speedup -s "Commit" --branch runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION) platform-var
 
 exportrepo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION): repo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION) exportrepo/config
@@ -55,7 +57,9 @@ repo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION): repo/refs/
 	rm -rf sdk-var
 	mkdir -p sdk-var
 	cp metadata.sdk sdk-var/metadata
-	ostree checkout --repo=repo --subpath=/usr -U base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) sdk-var/files
+	ostree checkout --repo=repo --subpath=/var -U base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) sdk-var/files
+	mkdir -p sdk-var/files/lib
+	ostree checkout --repo=repo --subpath=/usr/share/rpm -U base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) sdk-var/files/lib/rpm
 	ostree commit --repo=repo --no-xattrs --owner-uid=0 --owner-gid=0 --link-checkout-speedup -s "Commit" --branch runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION) sdk-var
 
 exportrepo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION): repo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION) exportrepo/config
