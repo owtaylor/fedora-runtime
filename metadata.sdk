@@ -1,4 +1,5 @@
 [Runtime]
+name=org.fedoraproject.Sdk/x86_64/22
 runtime=org.fedoraproject.Platform/x86_64/22
 sdk=org.fedoraproject.Sdk/x86_64/22
 
