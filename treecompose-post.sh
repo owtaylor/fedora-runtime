@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
 set -e
-# Work around /var/tmp/machines being a btrfs volume
-if btrfs subvolume show /var/tmp/machines &> /dev/null; then
-    btrfs subvolume delete /var/lib/machines
-    mkdir -p /var/lib/machines
-fi
+# Work around /var/lib/machines being a btrfs volume
+btrfs subvolume delete /var/lib/machines || true
+mkdir -p /var/lib/machines
 
 # Non writable directories are a pain in the ass since xdg-app rm -rf
 # can't remove files in them
