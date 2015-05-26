@@ -1,6 +1,6 @@
 all: platform sdk
 
-PROXY=--proxy=http://127.0.0.1:8123
+PROXY=
 VERSION=22
 ARCH=x86_64
 
