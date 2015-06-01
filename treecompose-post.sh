@@ -27,7 +27,9 @@ cat <<__EOF__ > /etc/fonts/conf.d/50-xdg-app.conf
 </fontconfig>
 __EOF__
 
-HOME=/root /usr/bin/fc-cache -f
+touch -d @0 /usr/share/fonts
+touch -d @0 /usr/share/fonts/*
+HOME=/root /usr/bin/fc-cache -fs
 
 # TODO: This is inherited from fedora-atomic, but not right for desktop use
 # See: https://bugzilla.redhat.com/show_bug.cgi?id=1051816
