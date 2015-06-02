@@ -1,5 +1,13 @@
 {
     "ref": "base/org.fedoraproject.Sdk/x86_64/22",
     "include": "fedora-runtime.json",
-    "packages": ["valgrind", "strace", "dnf", "dnf-plugins-core", "patchelf", "gdb", "cpio"]
+    "packages": ["valgrind",
+                 "strace",
+                 "dnf",
+                 "dnf-plugins-core",
+                 "patchelf",
+                 "gdb",
+                 "cpio",
+                 "rpm-build"
+                ]
 }
