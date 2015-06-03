@@ -4,21 +4,30 @@ PROXY=
 VERSION=22
 ARCH=x86_64
 
-local.repo: local.repo.in rpms/repodata/repomd.xml
+local.repo: local.repo.in
 	sed s_@builddir@_$(CURDIR)_ local.repo.in > local.repo
 
-rpms/repodata/repomd.xml: fedora-runtime.spec fedora-sdk.spec fedora-22-x86_64.cfg
+rpms/fedora-runtime-tag: fedora-runtime.spec fedora-22-x86_64.cfg
 	mkdir -p rpms
 	rm -rf tmp_srpm
 	mkdir -p tmp_srpm rpms
 	rm -f srpm/fedora-runtime*.src.rpm
 	mock -r fedora-22-x86_64.cfg --resultdir=tmp_srpm --buildsrpm --sources . --spec fedora-runtime.spec
 	mock --configdir=. -r fedora-22-x86_64.cfg --resultdir=rpms --rebuild tmp_srpm/fedora-runtime-*.src.rpm
+	rm -rf tmp_srpm
+	createrepo_c rpms
+	touch rpms/fedora-runtime-tag
+
+rpms/fedora-sdk-tag: fedora-runtime.spec fedora-sdk.spec fedora-22-x86_64.cfg
+	mkdir -p rpms
+	rm -rf tmp_srpm
+	mkdir -p tmp_srpm rpms
+	rm -f srpm/fedora-sdk*.src.rpm
 	mock -r fedora-22-x86_64.cfg --resultdir=tmp_srpm --buildsrpm --sources . --spec fedora-sdk.spec
 	mock --configdir=. -r fedora-22-x86_64.cfg --resultdir=rpms --rebuild tmp_srpm/fedora-sdk-*.src.rpm
 	rm -rf tmp_srpm
 	createrepo_c rpms
-	touch tag-fedora-runtime-rpms
+	touch rpms/fedora-sdk-tag
 
 repo/config:
 	ostree init --repo=repo --mode=bare-user
@@ -26,7 +35,7 @@ repo/config:
 exportrepo/config:
 	ostree init --repo=exportrepo --mode=archive-z2
 
-repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/config fedora-runtime.json local.repo treecompose-post.sh group passwd
+repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/config fedora-runtime.json local.repo rpms/fedora-runtime-tag treecompose-post.sh group passwd
 	rpm-ostree compose tree $(PROXY) --repo=repo fedora-runtime.json
 
 
@@ -55,7 +64,7 @@ exportrepo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION):
 platform: exportrepo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION) exportrepo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION)
 
 
-repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/config fedora-sdk.json fedora-runtime.json local.repo treecompose-post.sh group passwd
+repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/config fedora-sdk.json fedora-runtime.json local.repo rpms/fedora-sdk-tag treecompose-post.sh group passwd
 	rpm-ostree compose tree $(PROXY) --repo=repo fedora-sdk.json
 
 
