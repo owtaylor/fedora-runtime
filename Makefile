@@ -29,6 +29,17 @@ rpms/fedora-sdk-tag: fedora-runtime.spec fedora-sdk.spec fedora-22-x86_64.cfg
 	createrepo_c rpms
 	touch rpms/fedora-sdk-tag
 
+rpms/fedora-app-build-tag: fedora-app-build.spec fedora-22-x86_64.cfg
+	mkdir -p rpms
+	rm -rf tmp_srpm
+	mkdir -p tmp_srpm rpms
+	rm -f srpm/fedora-app-build*.src.rpm
+	mock -r fedora-22-x86_64.cfg --resultdir=tmp_srpm --buildsrpm --sources . --spec fedora-app-build.spec
+	mock --configdir=. -r fedora-22-x86_64.cfg --resultdir=rpms --rebuild tmp_srpm/fedora-app-build-*.src.rpm
+	rm -rf tmp_srpm
+	createrepo_c rpms
+	touch rpms/fedora-app-build-tag
+
 repo/config:
 	ostree init --repo=repo --mode=bare-user
 
