@@ -1,0 +1,6 @@
+[local]
+name=local rpms
+baseurl=file://@builddir@/rpms
+enabled=1
+gpgcheck=0
+metadata_expire=1s
