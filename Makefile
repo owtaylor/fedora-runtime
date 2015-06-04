@@ -29,7 +29,7 @@ rpms/fedora-sdk-tag: fedora-runtime.spec fedora-sdk.spec fedora-22-x86_64.cfg
 	createrepo_c rpms
 	touch rpms/fedora-sdk-tag
 
-rpms/fedora-app-build-tag: fedora-app-build.spec fedora-22-x86_64.cfg
+rpms/fedora-app-build-tag: fedora-app-build.spec app-list-required-pkg fedora-22-x86_64.cfg
 	mkdir -p rpms
 	rm -rf tmp_srpm
 	mkdir -p tmp_srpm rpms

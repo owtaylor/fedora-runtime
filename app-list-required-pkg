@@ -1,0 +1,202 @@
+#!/usr/bin/python
+
+import sys
+import re
+import dnf.rpm
+import hawkey
+import functools
+
+QFORMAT_DEFAULT = '%{name}-%{epoch}:%{version}-%{release}.%{arch}'
+# matches %[-][dd]{attr}
+QFORMAT_MATCH = re.compile(r'%([-\d]*?){([:\.\w]*?)}')
+
+class PackageWrapper(object):
+    """Wrapper for dnf.package.Package, so we can control formatting."""
+
+    def __init__(self, pkg):
+        self._pkg = pkg
+
+    def __getattr__(self, attr):
+        return getattr(self._pkg, attr)
+
+    @staticmethod
+    def _get_timestamp(timestamp):
+        if timestamp > 0:
+            dt = datetime.utcfromtimestamp(timestamp)
+            return dt.strftime("%Y-%m-%d %H:%M")
+        else:
+            return ''
+
+    @staticmethod
+    def _reldep_to_list(obj):
+        return '\n'.join([str(reldep) for reldep in obj])
+
+    @property
+    def buildtime(self):
+        return self._get_timestamp(self._pkg.buildtime)
+
+    @property
+    def conflicts(self):
+        return self._reldep_to_list(self._pkg.obsoletes)
+
+    @property
+    def description_wrapped(self):
+        return '\n'.join(textwrap.wrap(self.description))
+
+    @property
+    def enhances(self):
+        return self._reldep_to_list(self._pkg.enhances)
+
+    @property
+    def installtime(self):
+        return self._get_timestamp(self._pkg.installtime)
+
+    @property
+    def obsoletes(self):
+        return self._reldep_to_list(self._pkg.obsoletes)
+
+    @property
+    def provides(self):
+        return self._reldep_to_list(self._pkg.provides)
+
+    @property
+    def recommends(self):
+        return self._reldep_to_list(self._pkg.recommends)
+
+    @property
+    def requires(self):
+        return self._reldep_to_list(self._pkg.requires)
+
+    @property
+    def suggests(self):
+        return self._reldep_to_list(self._pkg.suggests)
+
+    @property
+    def supplements(self):
+        return self._reldep_to_list(self._pkg.supplements)
+
+
+def rpm2py_format(queryformat):
+    """Convert a rpm like QUERYFMT to an python .format() string."""
+    def fmt_repl(matchobj):
+        fill = matchobj.groups()[0]
+        key = matchobj.groups()[1]
+        if fill:
+            if fill[0] == '-':
+                fill = '>' + fill[1:]
+            else:
+                fill = '<' + fill
+            fill = ':' + fill
+        return '{0.' + key.lower() + fill + "}"
+
+    queryformat = queryformat.replace("\\n", "\n")
+    queryformat = queryformat.replace("\\t", "\t")
+    fmt = re.sub(QFORMAT_MATCH, fmt_repl, queryformat)
+    return fmt
+
+def by_provides(sack, pattern, query):
+    """Get a query for matching given provides."""
+    try:
+        reldeps = list(map(functools.partial(hawkey.Reldep, sack),
+                           pattern))
+    except hawkey.ValueException:
+        return query.filter(empty=True)
+    return query.filter(provides=reldeps)
+
+def by_requires(sack, pattern, query):
+    """Get a query for matching given requirements."""
+    try:
+        reldep = hawkey.Reldep(sack, pattern)
+    except hawkey.ValueException:
+        return query.filter(empty=True)
+    return query.filter(requires=reldep)
+
+def format_default(pkg):
+    return rpm2py_format(QFORMAT_DEFAULT).format(pkg)
+
+def run_arch_query(query):
+    current_arch = base.conf.substitutions['arch']
+    return query.filter(arch=current_arch).run() + query.filter(arch="noarch").run()
+    
+def get_packages(pkgname):
+    query = dnf.subject.Subject(pkgname, ignore_case=True).get_best_query(
+        base.sack, with_provides=False).available().latest()
+
+    res = list()
+    for po in run_arch_query (query):
+        try:
+            pkg = PackageWrapper(po)
+            res.append(format_default(pkg))
+        except AttributeError as e:
+            # catch that the user has specified attributes
+            # there don't exist on the dnf Package object.
+            raise dnf.exceptions.Error(str(e))
+    return res;
+
+def is_provided(base, capability):
+    query = base.sack.query().installed()
+    providers = by_provides(base.sack, [capability], query)
+    match = providers.run()
+    return len(match) > 0
+
+def get_requires_packages(base, pkgname):
+    query = dnf.subject.Subject(pkgname, ignore_case=True).get_best_query(
+        base.sack, with_provides=False).available()
+
+    fmt_fn = rpm2py_format("%{requires}").format
+    capabilities = list()
+    for po in run_arch_query (query):
+        try:
+            pkg = PackageWrapper(po)
+            for c in fmt_fn(pkg).split('\n'):
+                if not is_provided(base, c):
+                    capabilities.append(c)
+        except AttributeError as e:
+            # catch that the user has specified attributes
+            # there don't exist on the dnf Package object.
+            raise dnf.exceptions.Error(str(e))
+
+    # find the providing packages and show them
+    query = base.sack.query().available()
+    providers = by_provides(base.sack, list(capabilities), query)
+    res = list()
+    for po in run_arch_query (providers.latest()):
+        pkg = PackageWrapper(po)
+        res.append(format_default(pkg))
+    return res
+
+def get_recursive_requires_packages_helper(base, result, pkgid):
+    if pkgid in result:
+        # Already in list, but move it to end so we get a correct build order (sans cycles)
+        result.remove(pkgid)
+        result.append(pkgid)
+        return
+    result.append(pkgid)
+    requires = get_requires_packages(base, pkgid)
+    for r in requires:
+        get_recursive_requires_packages_helper(base, result, r)
+
+def get_recursive_requires_packages(base, pkgname):
+    result = list()
+    to_add = get_packages(pkgname);
+    for pkgid in to_add:
+        get_recursive_requires_packages_helper(base, result, pkgid)
+    result.reverse()
+    return result
+
+with dnf.Base() as base:
+    # Substitutions are needed for correct interpretation of repo files.
+    RELEASEVER = dnf.rpm.detect_releasever(base.conf.installroot)
+    base.conf.substitutions['releasever'] = RELEASEVER
+    base.read_all_repos()
+    base.fill_sack()
+
+    if len (sys.argv) != 2:
+        print("No argument given")
+        sys.exit(1)
+        
+    pkgs = get_recursive_requires_packages(base, sys.argv[1])
+    for p in pkgs:
+        print(p)
+    
+        
