@@ -116,7 +116,7 @@ def format_default(pkg):
 
 def run_arch_query(query):
     current_arch = base.conf.substitutions['arch']
-    return query.filter(arch=current_arch).run() + query.filter(arch="noarch").run()
+    return query.filter(arch=[current_arch, "noarch"]).run()
     
 def get_packages(pkgname):
     query = dnf.subject.Subject(pkgname, ignore_case=True).get_best_query(
