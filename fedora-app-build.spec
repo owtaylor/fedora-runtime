@@ -1,12 +1,15 @@
 Name:           fedora-app-build
 Version:        1.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Extra files needed for building apps
 Source1:        app-list-required-pkg
 
 License:        GPL
 
 BuildRequires: glade-devel
+
+# No need to pull in the real backgrounds in an app
+Provides: system-backgrounds-gnome
 
 %description
 Workarounds for building apps
