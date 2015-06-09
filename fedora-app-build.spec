@@ -1,12 +1,9 @@
 Name:           fedora-app-build
-Version:        1.0
-Release:        11%{?dist}
-Summary:        Extra files needed for building apps
-Source1:        app-list-required-pkg
+Version:        22
+Release:        1%{?dist}
+Summary:        Extra setup needed for building apps
 
 License:        GPL
-
-BuildRequires: glade-devel
 
 # No need to pull in the real backgrounds in an app
 Provides: system-backgrounds-gnome
@@ -21,17 +18,12 @@ Workarounds for building apps
 %install
 rm -rf $RPM_BUILD_ROOT
 
-mkdir -p $RPM_BUILD_ROOT%{_bindir}
-
-install %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}/
-
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/
 echo "/app/%{_lib}" > $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/app.conf
 
 %post -p /sbin/ldconfig
 
 %files
-%{_bindir}/app-list-required-pkg
 %{_sysconfdir}/ld.so.conf.d/app.conf
 
 %changelog

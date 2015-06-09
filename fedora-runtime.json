@@ -1,7 +1,7 @@
 {
     "ref": "base/org.fedoraproject.Platform/x86_64/22",
 
-    "repos": ["fedora-22", "local"],
+    "repos": ["fedora-22", "alexl-fedora-runtime"],
 
     "selinux": false,
 

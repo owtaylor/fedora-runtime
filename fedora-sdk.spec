@@ -14,10 +14,10 @@ Requires:       patchelf
 Requires:       rpm-build
 Requires:       dnf
 Requires:       dnf-plugins-core
-
+Requires:       python-dnf
 
 %description
-An xdg-app sdk runtime based on fedora
+An xdg-app sdk for the fedora runtime
 
 %prep
 
