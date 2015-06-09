@@ -13,7 +13,7 @@ rpms/fedora-runtime-tag: fedora-runtime.spec fedora-22-x86_64.cfg
 	mkdir -p tmp_srpm rpms
 	rm -f srpm/fedora-runtime*.src.rpm
 	mock -r fedora-22-x86_64.cfg --resultdir=tmp_srpm --buildsrpm --sources . --spec fedora-runtime.spec
-	mock --configdir=. -r fedora-22-x86_64.cfg --resultdir=rpms --rebuild tmp_srpm/fedora-runtime-*.src.rpm
+	mock -r fedora-22-x86_64.cfg --resultdir=rpms --rebuild tmp_srpm/fedora-runtime-*.src.rpm
 	rm -rf tmp_srpm
 	createrepo_c rpms
 	touch rpms/fedora-runtime-tag
@@ -24,7 +24,7 @@ rpms/fedora-sdk-tag: fedora-runtime.spec fedora-sdk.spec fedora-22-x86_64.cfg
 	mkdir -p tmp_srpm rpms
 	rm -f srpm/fedora-sdk*.src.rpm
 	mock -r fedora-22-x86_64.cfg --resultdir=tmp_srpm --buildsrpm --sources . --spec fedora-sdk.spec
-	mock --configdir=. -r fedora-22-x86_64.cfg --resultdir=rpms --rebuild tmp_srpm/fedora-sdk-*.src.rpm
+	mock -r fedora-22-x86_64.cfg --resultdir=rpms --rebuild tmp_srpm/fedora-sdk-*.src.rpm
 	rm -rf tmp_srpm
 	createrepo_c rpms
 	touch rpms/fedora-sdk-tag
@@ -35,7 +35,7 @@ rpms/fedora-app-build-tag: fedora-app-build.spec app-list-required-pkg fedora-22
 	mkdir -p tmp_srpm rpms
 	rm -f srpm/fedora-app-build*.src.rpm
 	mock -r fedora-22-x86_64.cfg --resultdir=tmp_srpm --buildsrpm --sources . --spec fedora-app-build.spec
-	mock --configdir=. -r fedora-22-x86_64.cfg --resultdir=rpms --rebuild tmp_srpm/fedora-app-build-*.src.rpm
+	mock -r fedora-22-x86_64.cfg --resultdir=rpms --rebuild tmp_srpm/fedora-app-build-*.src.rpm
 	rm -rf tmp_srpm
 	createrepo_c rpms
 	touch rpms/fedora-app-build-tag
