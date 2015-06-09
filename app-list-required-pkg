@@ -6,7 +6,6 @@ import dnf.rpm
 import hawkey
 import functools
 
-QFORMAT_DEFAULT = '%{name}-%{epoch}:%{version}-%{release}.%{arch}'
 # matches %[-][dd]{attr}
 QFORMAT_MATCH = re.compile(r'%([-\d]*?){([:\.\w]*?)}')
 
@@ -111,27 +110,16 @@ def by_requires(sack, pattern, query):
         return query.filter(empty=True)
     return query.filter(requires=reldep)
 
-def format_default(pkg):
-    return rpm2py_format(QFORMAT_DEFAULT).format(pkg)
-
-def run_arch_query(query):
+def arch_query(query):
     current_arch = base.conf.substitutions['arch']
-    return query.filter(arch=[current_arch, "noarch"]).run()
+    return query.filter(arch=[current_arch, "noarch"])
     
 def get_packages(pkgname):
     query = dnf.subject.Subject(pkgname, ignore_case=True).get_best_query(
         base.sack, with_provides=False).available().latest()
 
     res = list()
-    for po in run_arch_query (query):
-        try:
-            pkg = PackageWrapper(po)
-            res.append(format_default(pkg))
-        except AttributeError as e:
-            # catch that the user has specified attributes
-            # there don't exist on the dnf Package object.
-            raise dnf.exceptions.Error(str(e))
-    return res;
+    return arch_query (query).run()
 
 def is_provided(base, capability):
     query = base.sack.query().installed()
@@ -139,16 +127,19 @@ def is_provided(base, capability):
     match = providers.run()
     return len(match) > 0
 
-def get_requires_packages(base, pkgname):
-    query = dnf.subject.Subject(pkgname, ignore_case=True).get_best_query(
+def format_pkg(pkg, fmt_fn):
+    pw = PackageWrapper(pkg)
+    return fmt_fn(pw)
+
+def get_requires_packages(base, pkg):
+    query = dnf.subject.Subject(str(pkg), ignore_case=False).get_best_query(
         base.sack, with_provides=False).available()
 
     fmt_fn = rpm2py_format("%{requires}").format
     capabilities = list()
-    for po in run_arch_query (query):
+    for rpkg in arch_query (query).run():
         try:
-            pkg = PackageWrapper(po)
-            for c in fmt_fn(pkg).split('\n'):
+            for c in format_pkg(rpkg, fmt_fn).split('\n'):
                 if not is_provided(base, c):
                     capabilities.append(c)
         except AttributeError as e:
@@ -159,28 +150,24 @@ def get_requires_packages(base, pkgname):
     # find the providing packages and show them
     query = base.sack.query().available()
     providers = by_provides(base.sack, list(capabilities), query)
-    res = list()
-    for po in run_arch_query (providers.latest()):
-        pkg = PackageWrapper(po)
-        res.append(format_default(pkg))
-    return res
+    return arch_query (providers.latest()).run()
 
-def get_recursive_requires_packages_helper(base, result, pkgid):
-    if pkgid in result:
+def get_recursive_requires_packages_helper(base, result, pkg):
+    if pkg in result:
         # Already in list, but move it to end so we get a correct build order (sans cycles)
-        result.remove(pkgid)
-        result.append(pkgid)
+        result.remove(pkg)
+        result.append(pkg)
         return
-    result.append(pkgid)
-    requires = get_requires_packages(base, pkgid)
+    result.append(pkg)
+    requires = get_requires_packages(base, pkg)
     for r in requires:
         get_recursive_requires_packages_helper(base, result, r)
 
 def get_recursive_requires_packages(base, pkgname):
     result = list()
     to_add = get_packages(pkgname);
-    for pkgid in to_add:
-        get_recursive_requires_packages_helper(base, result, pkgid)
+    for pkg in to_add:
+        get_recursive_requires_packages_helper(base, result, pkg)
     result.reverse()
     return result
 
@@ -191,12 +178,30 @@ with dnf.Base() as base:
     base.read_all_repos()
     base.fill_sack()
 
-    if len (sys.argv) != 2:
-        print("No argument given")
-        sys.exit(1)
-        
-    pkgs = get_recursive_requires_packages(base, sys.argv[1])
+    source = False
+    name = None
+    pos = 1
+    while True:
+        if len (sys.argv) <= pos:
+            print("No argument given")
+            sys.exit(1)
+        arg = sys.argv[pos]
+        if arg == '-s':
+            source = True;
+            pos = pos + 1
+            continue
+
+        name = arg
+        break
+
+    pkgs = get_recursive_requires_packages(base, name)
+    printed = list()
     for p in pkgs:
-        print(p)
+        if source:
+            if not p.sourcerpm in printed:
+                print(p.sourcerpm)
+                printed.append(p.sourcerpm)
+        else:
+            print(p)
     
         
