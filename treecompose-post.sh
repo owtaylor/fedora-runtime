@@ -9,24 +9,8 @@ mkdir -p /var/lib/machines
 # can't remove files in them
 find /usr -type d -exec chmod u+w {} \;
 
-mkdir -p /usr/cache/fontconfig
-mkdir -p  /etc/fonts/conf.d
-
-cat <<__EOF__ > /etc/fonts/conf.d/50-xdg-app.conf
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-        <cachedir>/usr/cache/fontconfig</cachedir>
-
-        <dir>/app/share/fonts</dir>
-        <cachedir>/app/cache/fontconfig</cachedir>
-
-        <include ignore_missing="yes">/app/etc/fonts/local.conf</include>
-
-        <dir>/run/host/fonts</dir>
-</fontconfig>
-__EOF__
-
+# Make sure all fonts are mtime 0 and update caches, as otherwise
+# fontconfig will think the caches are invalid
 touch -d @0 /usr/share/fonts
 touch -d @0 /usr/share/fonts/*
 HOME=/root /usr/bin/fc-cache -fs

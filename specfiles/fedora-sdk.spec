@@ -1,7 +1,8 @@
 Name:           fedora-sdk
 Version:        22
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An xdg-app sdk runtime based on fedora
+BuildArch:      noarch
 
 License:        GPL
 

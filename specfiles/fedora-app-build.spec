@@ -1,7 +1,8 @@
 Name:           fedora-app-build
 Version:        22
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Extra setup needed for building apps
+BuildArch:      noarch
 
 License:        GPL
 
