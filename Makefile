@@ -11,10 +11,12 @@ exportrepo/config:
 	ostree init --repo=exportrepo --mode=archive-z2
 
 repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/config fedora-runtime.json treecompose-post.sh group passwd
-	rpm-ostree compose tree --force-nocache $(PROXY) --repo=repo fedora-runtime.json
+	sudo rpm-ostree compose tree --force-nocache $(PROXY) --repo=repo fedora-runtime.json
+	sudo chown -R `whoami` repo
 
 repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/config fedora-sdk.json fedora-runtime.json treecompose-post.sh group passwd
-	rpm-ostree compose tree --force-nocache $(PROXY) --repo=repo fedora-sdk.json
+	sudo rpm-ostree compose tree --force-nocache $(PROXY) --repo=repo fedora-sdk.json
+	sudo chown -R `whoami` repo
 
 repo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION)
 	./commit-subtree.sh base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION) metadata.platform /usr files
