@@ -13,55 +13,36 @@ exportrepo/config:
 repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/config fedora-runtime.json treecompose-post.sh group passwd
 	rpm-ostree compose tree --force-nocache $(PROXY) --repo=repo fedora-runtime.json
 
+repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/config fedora-sdk.json fedora-runtime.json treecompose-post.sh group passwd
+	rpm-ostree compose tree --force-nocache $(PROXY) --repo=repo fedora-sdk.json
+
 repo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION)
-	rm -rf platform
-	mkdir -p platform
-	cp metadata.platform platform/metadata
-	ostree checkout --repo=repo --subpath=/usr -U base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) platform/files
-	ostree commit --repo=repo --no-xattrs --owner-uid=0 --owner-gid=0 --link-checkout-speedup -s "Commit" --branch runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION) platform
+	./commit-subtree.sh base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION) metadata.platform /usr files
+
+repo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION)
+	./commit-subtree.sh base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION) metadata.platform /var files  /usr/share/rpm files/lib/rpm
+
+repo/refs/heads/runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION)
+	./commit-subtree.sh base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) metadata.sdk /usr files
+
+repo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION)
+	./commit-subtree.sh base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION) metadata.sdk /var files /usr/share/rpm files/lib/rpm
 
 exportrepo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION) exportrepo/config
 	ostree pull-local --repo=exportrepo repo runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION)
 
-repo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION)
-	rm -rf platform-var
-	mkdir -p platform-var
-	cp metadata.platform platform-var/metadata
-	ostree checkout --repo=repo --subpath=/var -U base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) platform-var/files
-	mkdir -p platform-var/files/lib
-	ostree checkout --repo=repo --subpath=/usr/share/rpm -U base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) platform-var/files/lib/rpm
-	ostree commit --repo=repo --no-xattrs --owner-uid=0 --owner-gid=0 --link-checkout-speedup -s "Commit" --branch runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION) platform-var
-
 exportrepo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION): repo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION) exportrepo/config
 	ostree pull-local --repo=exportrepo repo runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION)
-
-platform: exportrepo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION) exportrepo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION)
-
-
-repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/config fedora-sdk.json fedora-runtime.json treecompose-post.sh group passwd
-	rpm-ostree compose tree --force-nocache $(PROXY) --repo=repo fedora-sdk.json
-
-
-repo/refs/heads/runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION)
-	rm -rf sdk
-	mkdir -p sdk
-	cp metadata.sdk sdk/metadata
-	ostree checkout --repo=repo --subpath=/usr -U base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) sdk/files
-	ostree commit --repo=repo --no-xattrs --owner-uid=0 --owner-gid=0 --link-checkout-speedup -s "Commit" --branch runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) sdk
 
 exportrepo/refs/heads/runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/refs/heads/runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) exportrepo/config
 	ostree pull-local --repo=exportrepo repo runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION)
 
-repo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION)
-	rm -rf sdk-var
-	mkdir -p sdk-var
-	cp metadata.sdk sdk-var/metadata
-	ostree checkout --repo=repo --subpath=/var -U base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) sdk-var/files
-	mkdir -p sdk-var/files/lib
-	ostree checkout --repo=repo --subpath=/usr/share/rpm -U base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) sdk-var/files/lib/rpm
-	ostree commit --repo=repo --no-xattrs --owner-uid=0 --owner-gid=0 --link-checkout-speedup -s "Commit" --branch runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION) sdk-var
-
 exportrepo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION): repo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION) exportrepo/config
 	ostree pull-local --repo=exportrepo repo runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION)
 
+platform: exportrepo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION) exportrepo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION)
+
 sdk: exportrepo/refs/heads/runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) exportrepo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION)
+
+clean:
+	rm -rf repo exportrepo .commit-*
