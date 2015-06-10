@@ -1,6 +1,6 @@
 Name:           fedora-app-build
 Version:        22
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Extra setup needed for building apps
 BuildArch:      noarch
 
@@ -19,13 +19,7 @@ Workarounds for building apps
 %install
 rm -rf $RPM_BUILD_ROOT
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/
-echo "/app/%{_lib}" > $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/app.conf
-
-%post -p /sbin/ldconfig
-
 %files
-%{_sysconfdir}/ld.so.conf.d/app.conf
 
 %changelog
 * Wed Jun  3 2015 Alexander Larsson <alexl@redhat.com>

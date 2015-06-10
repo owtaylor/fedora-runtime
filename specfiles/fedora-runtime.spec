@@ -1,6 +1,6 @@
 Name:           fedora-runtime
 Version:        22
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An xdg-app runtime based on fedora
 Source1:        50-xdg-app.conf
 BuildArch:      noarch
@@ -44,9 +44,15 @@ mkdir -p $RPM_BUILD_ROOT%{_prefix}/cache/fontconfig
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d
 install -t $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d -m 644 %{SOURCE1} 
 
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/
+echo "/app/%{_lib}" > $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/app.conf
+
+%post -p /sbin/ldconfig
+
 %files
 %{_prefix}/cache/fontconfig
 %{_sysconfdir}/fonts/conf.d/*
+%{_sysconfdir}/ld.so.conf.d/app.conf
 
 %changelog
 * Wed Jun  3 2015 Alexander Larsson <alexl@redhat.com>
