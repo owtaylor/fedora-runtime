@@ -1,6 +1,6 @@
 Name:           fedora-app-build
-Version:        22
-Release:        3%{?dist}
+Version:        23
+Release:        1%{?dist}
 Summary:        Extra setup needed for building apps
 BuildArch:      noarch
 
@@ -8,6 +8,8 @@ License:        GPL
 
 # No need to pull in the real backgrounds in an app
 Provides: system-backgrounds-gnome
+# We include gvfs-client, but the gvfs part is on the host side
+Provides: gvfs
 
 %description
 Workarounds for building apps

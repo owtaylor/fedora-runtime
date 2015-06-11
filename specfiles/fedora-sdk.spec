@@ -1,6 +1,6 @@
 Name:           fedora-sdk
-Version:        22
-Release:        2%{?dist}
+Version:        23
+Release:        1%{?dist}
 Summary:        An xdg-app sdk runtime based on fedora
 BuildArch:      noarch
 
@@ -15,7 +15,7 @@ Requires:       patchelf
 Requires:       rpm-build
 Requires:       dnf
 Requires:       dnf-plugins-core
-Requires:       python-dnf
+Requires:       python3-dnf
 
 %description
 An xdg-app sdk for the fedora runtime

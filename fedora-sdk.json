@@ -1,5 +1,5 @@
 {
-    "ref": "base/org.fedoraproject.Sdk/x86_64/22",
+    "ref": "base/org.fedoraproject.Sdk/x86_64/23",
     "include": "fedora-runtime.json",
     "packages": ["fedora-sdk"]
 }

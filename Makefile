@@ -1,7 +1,7 @@
 all: platform sdk
 
 PROXY=
-VERSION=22
+VERSION=23
 ARCH=x86_64
 
 repo/config:

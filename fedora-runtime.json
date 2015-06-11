@@ -1,7 +1,7 @@
 {
-    "ref": "base/org.fedoraproject.Platform/x86_64/22",
+    "ref": "base/org.fedoraproject.Platform/x86_64/23",
 
-    "repos": ["fedora-22", "alexl-fedora-runtime"],
+    "repos": ["rawhide", "alexl-fedora-runtime"],
 
     "selinux": false,
 
@@ -9,7 +9,7 @@
 
     "container": true,
 
-    "automatic_version_prefix": "22",
+    "automatic_version_prefix": "23",
 
     "install-langs": ["en_US"],
 

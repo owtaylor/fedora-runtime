@@ -1,6 +1,6 @@
 Name:           fedora-runtime
-Version:        22
-Release:        3%{?dist}
+Version:        23
+Release:        1%{?dist}
 Summary:        An xdg-app runtime based on fedora
 Source1:        50-xdg-app.conf
 BuildArch:      noarch
@@ -23,12 +23,14 @@ Requires:	pulseaudio-libs pulseaudio-libs-glib2
 Requires:	gtk2 gtk2-immodules gtk3 gtk3-immodules
 Requires:	clutter clutter-gtk
 Requires:	adwaita-icon-theme gnome-themes-standard gsettings-desktop-schemas
-Requires:	gobject-introspection dbus-glib dconf gjs json-glib librsvg2 libsecret webkitgtk4 libproxy avahi-glib
+Requires:	gvfs-client gobject-introspection dbus-glib dconf gjs json-glib librsvg2 libsecret webkitgtk4 libproxy avahi-gobject
 Requires:       enchant aspell
 Requires:	lcms2 zenity desktop-file-utils attr bzip2 elfutils less libatomic_ops libtool-ltdl libsamplerate tar zip unzip startup-notification
 Requires:	speex libvpx libexif libogg jasper flac-libs libjpeg-turbo libpng libsndfile libtheora libtiff libvisual libvorbis libwebp giflib openjpeg2
 Requires:	SDL2 SDL2_image SDL2_net SDL2_mixer SDL2_ttf
 Requires:	perl python3 python3-cairo python3-gobject
+Requires:       qt5-qtbase-gui qt5-qtdeclarative qt5-qtlocation qt5-qtsensors qt5-qttools-libs-designer qt5-qtwebkit qt5-qtxmlpatterns
+Requires:	qt qt-x11
 
 %description
 An xdg-app runtime based on fedora

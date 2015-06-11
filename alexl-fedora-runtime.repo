@@ -1,6 +1,8 @@
 [alexl-fedora-runtime]
 name=Copr repo for fedora-runtime owned by alexl
-baseurl=https://copr-be.cloud.fedoraproject.org/results/alexl/fedora-runtime/fedora-$releasever-$basearch/
+#baseurl=https://copr-be.cloud.fedoraproject.org/results/alexl/fedora-runtime/fedora-$releasever-$basearch/
+# We're just using one chroot (22) for now
+baseurl=https://copr-be.cloud.fedoraproject.org/results/alexl/fedora-runtime/fedora-22-$basearch/
 gpgcheck=0
 gpgkey=https://copr-be.cloud.fedoraproject.org/results/alexl/fedora-runtime/pubkey.gpg
 enabled=1
