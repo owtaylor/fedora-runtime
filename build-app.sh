@@ -34,7 +34,7 @@ for i in `find $DIR/files/share/applications/ -name "*.desktop"`; do
 
 	    # Rename any matching icons
 	    for icon_file in `find $DIR/files/share/icons/hicolor/ -name "$icon.*"`; do
-		mv $icon_file  "`dirname $icon_file`/${icon_prefix}.`basename $icon_file`"
+		cp $icon_file  "`dirname $icon_file`/${icon_prefix}.`basename $icon_file`"
 		found_icon=yes
 	    done
 
