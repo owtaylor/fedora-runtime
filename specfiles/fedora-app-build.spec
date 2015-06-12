@@ -1,11 +1,13 @@
 Name:           fedora-app-build
 Version:        23
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Extra setup needed for building apps
 BuildArch:      noarch
 Source1:        macros.xdg-app
 
 License:        GPL
+
+Requires:	fedora-runtime
 
 # No need to pull in the real backgrounds in an app
 Provides: system-backgrounds-gnome
