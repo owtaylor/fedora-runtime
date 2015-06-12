@@ -1,6 +1,6 @@
 Name:           fedora-app-build
 Version:        23
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Extra setup needed for building apps
 BuildArch:      noarch
 Source1:        macros.xdg-app

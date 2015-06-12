@@ -54,6 +54,8 @@
   export XDG_CONFIG_DIRS\
   XDG_DATA_DIRS="%{_datadir}:%{_usr}/local/share:%{_usr}/share"\
   export XDG_DATA_DIRS\
+  GVFS_REMOTE_VOLUME_MONITOR_IGNORE="1"\
+  export GVFS_REMOTE_VOLUME_MONITOR_IGNORE\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
