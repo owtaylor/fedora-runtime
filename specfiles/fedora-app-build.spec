@@ -1,8 +1,9 @@
 Name:           fedora-app-build
 Version:        23
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Extra setup needed for building apps
 BuildArch:      noarch
+Source1:        macros.xdg-app
 
 License:        GPL
 
@@ -20,8 +21,11 @@ Workarounds for building apps
 
 %install
 rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/rpm
+install -t $RPM_BUILD_ROOT%{_sysconfdir}/rpm -m 644 %{SOURCE1}
 
 %files
+%{_sysconfdir}/rpm/*
 
 %changelog
 * Wed Jun  3 2015 Alexander Larsson <alexl@redhat.com>

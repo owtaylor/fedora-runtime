@@ -1,0 +1,60 @@
+%app	true
+%dist  .fc%{fedora}app
+%_prefix	/app
+%_sysconfdir	%{_prefix}/etc
+%python3_sitearch	%{_libdir}/python3.4/site-packages
+
+%___build_pre	\
+  RPM_SOURCE_DIR=\"%{u2p:%{_sourcedir}}\"\
+  RPM_BUILD_DIR=\"%{u2p:%{_builddir}}\"\
+  RPM_OPT_FLAGS=\"%{optflags}\"\
+  RPM_LD_FLAGS=\"%{?__global_ldflags}\"\
+  RPM_ARCH=\"%{_arch}\"\
+  RPM_OS=\"%{_os}\"\
+  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_LD_FLAGS RPM_ARCH RPM_OS\
+  RPM_DOC_DIR=\"%{_docdir}\"\
+  export RPM_DOC_DIR\
+  RPM_PACKAGE_NAME=\"%{name}\"\
+  RPM_PACKAGE_VERSION=\"%{version}\"\
+  RPM_PACKAGE_RELEASE=\"%{release}\"\
+  export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
+  LANG=C\
+  export LANG\
+  unset CDPATH DISPLAY ||:\
+  %{?buildroot:RPM_BUILD_ROOT=\"%{u2p:%{buildroot}}\"\
+  export RPM_BUILD_ROOT}\
+  %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
+  export CLASSPATH}\
+  CONFIG_SITE=${CONFIG_SITE:-NONE}\
+  export CONFIG_SITE\
+  ACLOCAL_PATH="%{_datadir}/aclocal:%{_usr}/share/aclocal"\
+  export ACLOCAL_PATH\
+  CPATH="%{_prefix}/include"\
+  export CPATH\
+  CPLUS_INCLUDE_PATH="%{_prefix}/include"\
+  export CPLUS_INCLUDE_PATH\
+  C_INCLUDE_PATH="%{_prefix}/include"\
+  export C_INCLUDE_PATH\
+  GI_TYPELIB_PATH="%{_libdir}/girepository-1.0:%{_usr}/%{_lib}/girepository-1.0"\
+  export GI_TYPELIB_PATH\
+  INFOPATH="%{_datadir}/info"\
+  export INFOPATH\
+  LDFLAGS="-L%{_libdir} "\
+  export LDFLAGS\
+  MANPATH="%{_datadir}/man:"\
+  export MANPATH\
+  OBJC_INCLUDE_PATH="%{_prefix}/include"\
+  export OBJC_INCLUDE_PATH\
+  PATH="%{_bindir}:%{_usr}/local/sbin:%{_usr}/bin:/bin:%{_usr}/sbin:/sbin"\
+  PKG_CONFIG_GLADEUI_2_0_CATALOGDIR="%{_datadir}/glade/catalogs"\
+  export PKG_CONFIG_GLADEUI_2_0_CATALOGDIR\
+  PKG_CONFIG_PATH="%{_libdir}/pkgconfig:%{_datadir}/pkgconfig:%{_usr}/%{_lib}/pkgconfig:%{_usr}/share/pkgconfig"\
+  export PKG_CONFIG_PATH\
+  XDG_CONFIG_DIRS="%{_sysconfdir}/xdg:/etc/xdg"\
+  export XDG_CONFIG_DIRS\
+  XDG_DATA_DIRS="%{_datadir}:%{_usr}/local/share:%{_usr}/share"\
+  export XDG_DATA_DIRS\
+  \
+  %{verbose:set -x}%{!verbose:exec > /dev/null}\
+  umask 022\
+  cd \"%{u2p:%{_builddir}}\"\
