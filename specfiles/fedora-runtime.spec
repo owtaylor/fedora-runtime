@@ -1,6 +1,6 @@
 Name:           fedora-runtime
 Version:        23
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An xdg-app runtime based on fedora
 Source1:        50-xdg-app.conf
 BuildArch:      noarch
@@ -21,6 +21,7 @@ Requires:       xorg-x11-font-utils ttmkfdir
 Requires:	mesa-libEGL mesa-libglapi mesa-libgbm mesa-libwayland-egl mesa-libGL mesa-dri-drivers mesa-libGLU libGLEW
 Requires:	pulseaudio-libs pulseaudio-libs-glib2
 Requires:	gtk2 gtk2-immodules gtk3 gtk3-immodules
+Requires:       gstreamer1 gstreamer1-plugins-base gstreamer1-plugins-good
 Requires:	clutter clutter-gtk
 Requires:	adwaita-icon-theme gnome-themes-standard gsettings-desktop-schemas
 Requires:	gvfs-client gobject-introspection dbus-glib dconf gjs json-glib librsvg2 libsecret webkitgtk4 libproxy avahi-gobject
