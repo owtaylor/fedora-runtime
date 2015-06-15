@@ -1,6 +1,6 @@
 Name:           fedora-runtime
 Version:        23
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An xdg-app runtime based on fedora
 Source1:        50-xdg-app.conf
 BuildArch:      noarch
@@ -28,7 +28,7 @@ Requires:       enchant aspell
 Requires:	lcms2 zenity desktop-file-utils attr bzip2 elfutils less libatomic_ops libtool-ltdl libsamplerate tar zip unzip startup-notification
 Requires:	speex libvpx libexif libogg jasper flac-libs libjpeg-turbo libpng libsndfile libtheora libtiff libvisual libvorbis libwebp giflib openjpeg2
 Requires:	SDL2 SDL2_image SDL2_net SDL2_mixer SDL2_ttf
-Requires:	perl python3 python3-cairo python3-gobject
+Requires:	perl python python3 python3-cairo python3-gobject
 Requires:       qt5-qtbase-gui qt5-qtdeclarative qt5-qtlocation qt5-qtsensors qt5-qttools-libs-designer qt5-qtwebkit qt5-qtxmlpatterns
 Requires:	qt qt-x11
 
