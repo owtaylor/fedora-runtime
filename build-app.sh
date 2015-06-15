@@ -13,7 +13,8 @@ rm -rf  $DIR
 xdg-app build-init $DIR $APPID org.fedoraproject.Sdk org.fedoraproject.Platform 23
 
 mock -r fedora-app-23-x86_64.cfg --clean
-mock -r fedora-app-23-x86_64.cfg --install --disablerepo=* --enablerepo=app "$RPM"
+mock -r fedora-app-23-x86_64.cfg --shell true
+mock -r fedora-app-23-x86_64.cfg --install --disablerepo=* --enablerepo=$REPO "$RPM"
 mock -r fedora-app-23-x86_64.cfg --shell "tar cvf /app.tar /app"
 mock -r fedora-app-23-x86_64.cfg  --copyout /app.tar .
 
