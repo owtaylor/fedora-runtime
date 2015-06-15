@@ -1,5 +1,11 @@
 #!/bin/sh
 
+REPO=alexl-fedora-apps
+if [ "x$1" == "x-l" ] ; then
+    REPO=local-apps
+    shift
+fi
+
 RPM=$1
 shift
 APPID=$1
