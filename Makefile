@@ -18,16 +18,16 @@ repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/config fedor
 	sudo rpm-ostree compose tree --force-nocache $(PROXY) --repo=repo fedora-sdk.json
 	sudo chown -R `whoami` repo
 
-repo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION)
+repo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) metadata.platform
 	./commit-subtree.sh base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION) metadata.platform /usr files
 
-repo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION)
+repo/refs/heads/runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) metadata.platform
 	./commit-subtree.sh base/org.fedoraproject.Platform/$(ARCH)/$(VERSION) runtime/org.fedoraproject.Platform.Var/$(ARCH)/$(VERSION) metadata.platform /var files  /usr/share/rpm files/lib/rpm
 
-repo/refs/heads/runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION)
+repo/refs/heads/runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) metadata.sdk
 	./commit-subtree.sh base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) runtime/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) metadata.sdk /usr files
 
-repo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION)
+repo/refs/heads/runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION): repo/refs/heads/base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) metadata.sdk
 	./commit-subtree.sh base/org.fedoraproject.Sdk/$(ARCH)/$(VERSION) runtime/org.fedoraproject.Sdk.Var/$(ARCH)/$(VERSION) metadata.sdk /var files /usr/share/rpm files/lib/rpm
 
 exportrepo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION): repo/refs/heads/runtime/org.fedoraproject.Platform/$(ARCH)/$(VERSION) exportrepo/config
