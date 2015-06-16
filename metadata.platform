@@ -3,7 +3,7 @@ name=org.fedoraproject.Platform/x86_64/23
 runtime=org.fedoraproject.Platform/x86_64/23
 sdk=org.fedoraproject.Sdk/x86_64/23
 
-[Environment Vars]
+[Environment]
 LD_LIBRARY_PATH=/app/lib64
 
 [Session Bus Policy]
