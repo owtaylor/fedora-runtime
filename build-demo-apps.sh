@@ -10,6 +10,7 @@ fi
 
 ./build-app.sh evince org.gnome.evince --share=ipc --command=evince --socket=x11 --socket=wayland --socket=session-bus --filesystem=host
 ./build-app.sh gedit org.gnome.gedit --share=ipc --command=gedit --socket=x11 --socket=wayland --socket=session-bus --filesystem=host
+ostree summary -u --repo=exportrepo
 
 # Try with:
 # xdg-app install-app --user fedora-local-build org.gnome.evince
