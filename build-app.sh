@@ -16,6 +16,7 @@ set -x
 
 DIR=$APPID.builddir
 rm -rf  $DIR
+
 xdg-app build-init $DIR $APPID org.fedoraproject.Sdk org.fedoraproject.Platform 23
 
 mock -r fedora-app-23-x86_64.cfg --clean
@@ -57,3 +58,6 @@ for i in `find $DIR/files/share/applications/ -name "*.desktop"`; do
 	mv $i "`dirname $i`/${APPID%.`basename $i .desktop`}.${bn}";
     fi
 done
+
+xdg-app build-finish "$@" --filesystem=host $DIR
+xdg-app build-export exportrepo $DIR

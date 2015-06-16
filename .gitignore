@@ -7,3 +7,6 @@ sdk
 sdk-var
 local.repo
 rpms
+*.builddir
+specfiles/RPMS
+specfiles/SRPMS
