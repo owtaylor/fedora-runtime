@@ -5,3 +5,6 @@ sdk=org.fedoraproject.Sdk/x86_64/23
 
 [Environment Vars]
 LD_LIBRARY_PATH=/app/lib64
+
+[Session Bus Policy]
+org.freedesktop.portal.*=talk
