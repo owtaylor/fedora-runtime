@@ -1,0 +1,5 @@
+{
+        "runtime": "org.fedoraproject.Platform",
+        "runtime-version": "23",
+        "sdk": "org.fedoraproject.Sdk"
+}
