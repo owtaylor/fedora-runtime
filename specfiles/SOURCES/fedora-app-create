@@ -1,0 +1,175 @@
+#!/usr/bin/python
+
+import ConfigParser
+import json
+import os
+import pipes
+import platform
+import re
+import shutil
+import subprocess
+import sys
+
+def die(msg):
+    print >>sys.stderr, msg
+    sys.exit(1)
+
+def check_call(args):
+    print >>sys.stderr, "Running: " + ' '.join(pipes.quote(a) for a in args)
+    rv = subprocess.call(args)
+    if rv != 0:
+        die("%s failed (exit status=%d)" % (args[0], rv))
+
+def find_desktop_files(builddir):
+    for (dirpath, dirnames, filenames) in os.walk(os.path.join(builddir, 'files/share/applications')):
+        for filename in filenames:
+            if not filename.endswith('.desktop'):
+                continue
+            yield os.path.join(dirpath, filename)
+
+def find_icons(builddir, name):
+    for (dirpath, dirnames, filenames) in os.walk(os.path.join(builddir, 'files/share/icons/hicolor')):
+        for filename in filenames:
+            if not filename.startswith(name + '.'):
+                continue
+            yield os.path.join(dirpath, filename)
+
+# Returns xdg-apps view of the name of the current arch - this is a port of the
+# code in xdg-app-utils.c:xdg_app_get_arch
+def get_arch():
+    # By default, just pass on machine, good enough for most arches
+    arch = platform.machine()
+
+    if re.match('^i.86$', arch):
+        arch = 'i386'
+    elif arch.startswith('arm'):
+        if arch.endswith('b'):
+            arch = 'armeb';
+        else:
+            arch = 'arm';
+    elif arch == 'mips':
+        if sys.byteorder == 'little':
+            arch = "mipsel"
+    elif arch == 'mip65':
+        if sys.byteorder == 'little':
+            arch = "mips64el"
+
+    return arch
+
+# add_app_prefix('org.gimp', 'gimp, 'gimp.desktop') => org.gimp.desktop
+# add_app_prefix('org.gmoe', 'eog, 'eog.desktop') => org.gnome.eog.desktop
+def add_app_prefix(app_id, root, full):
+    prefix = app_id
+    if prefix.endswith('.' + root):
+        prefix = prefix[0:-(1 + len(root))]
+    return prefix + '.' + full
+
+def update_desktop_files(app_id, builddir):
+    for full_path in find_desktop_files(builddir):
+        cp = ConfigParser.RawConfigParser()
+        cp.read([full_path])
+        try:
+            icon = cp.get('Desktop Entry', 'Icon')
+        except ConfigParser.NoOptionError:
+            icon = None
+
+        # Does it have an icon?
+        if icon and not icon.startswith(app_id):
+	    found_icon=False
+
+	    # Rename any matching icons
+	    for icon_file in find_icons(builddir, icon):
+		shutil.copy(icon_file,
+                            os.path.join(os.path.dirname(icon_file),
+                                         add_app_prefix(app_id, icon, os.path.basename(icon_file))))
+		found_icon=True
+
+	    # If we renamed the icon, change the desktop file
+	    if found_icon:
+                check_call(['desktop-file-edit',
+                            '--set-icon',
+                            add_app_prefix(app_id, icon, icon), full_path])
+
+        # Is the desktop file not prefixed with the app id, then prefix it
+        basename = os.path.basename(full_path)
+        if not basename.startswith(app_id):
+            shutil.move(full_path,
+                        os.path.join(os.path.dirname(full_path),
+                                     add_app_prefix(app_id,
+                                                    basename[:-len('.desktop')],
+                                                    basename)))
+
+def build_app(jsonfile, tarfile, outfile):
+    with open(jsonfile) as f:
+        info = json.load(f)
+
+    app_id = info['id']
+
+    builddir = app_id + '.builddir'
+    if os.path.exists(builddir):
+        shutil.rmtree(builddir)
+
+    check_call(['xdg-app', 'build-init', builddir, app_id, info['sdk'], info['runtime'], info['runtime-version']])
+#    check_call(['xdg-app', 'build', builddir, 'tar', 'xvCf', '/', tarfile])
+    check_call(['tar', 'xCf', builddir, tarfile, '--transform=s@^app@files@'])
+
+    update_desktop_files(app_id, builddir)
+
+    check_call(['xdg-app', 'build-finish'] + info['finish-args'] + [builddir])
+    check_call(['xdg-app', 'build-export', 'exportrepo', builddir])
+    check_call(['xdg-app', 'build-bundle', 'exportrepo', outfile, app_id, ])
+
+def build_runtime(jsonfile, tarfile, outfile):
+    with open(jsonfile) as f:
+        info = json.load(f)
+
+    runtime = info['runtime']
+
+    builddir = runtime + '.builddir'
+    if os.path.exists(builddir):
+        shutil.rmtree(builddir)
+
+    repo = 'exportrepo'
+
+    if not os.path.exists(repo):
+        check_call(['ostree', 'init', '--mode=archive-z2', '--repo', repo])
+
+    os.mkdir(builddir)
+    check_call(['tar',
+                'xvCf',
+                builddir, tarfile,
+                '--transform=s,^./usr,files,',
+                '--transform=s,^./etc,files/etc,',
+                '--anchored', '--exclude', './[!eu]*'])
+    with open(os.path.join(builddir, 'metadata'), 'w') as f:
+        f.write("""[Runtime]
+name=%(runtime)s
+runtime=%(runtime)s/%(arch)s/%(runtime_version)s
+sdk=%(runtime)s/%(arch)s/%(runtime_version)s
+        """ % {
+            'runtime': info['runtime'],
+            'arch': get_arch(),
+            'runtime_version': info['runtime-version']
+        })
+
+    runtime_ref = 'runtime/%(runtime)s/%(arch)s/%(runtime_version)s' % {
+            'runtime': info['runtime'],
+            'arch': get_arch(),
+            'runtime_version': info['runtime-version']
+        }
+
+    check_call(['ostree', 'commit', '--generate-sizes', '--repo', repo, '--owner-uid=0', '--owner-gid=0', '--no-xattrs', '--branch', runtime_ref, '-s', 'build of ' + runtime_ref, builddir])
+    check_call(['ostree', 'summary', '-u', '--repo', repo])
+
+    check_call(['xdg-app', 'build-bundle', 'exportrepo', '--runtime', outfile, info['runtime'], info['runtime-version']])
+
+if __name__ == '__main__':
+    if sys.argv[1] == '--runtime':
+        if len(sys.argv) != 5:
+            die("Usage: fedora-app-create [--runtime] JSONFILE TARFILE OUTFILE")
+        build_runtime(sys.argv[2], sys.argv[3], sys.argv[4])
+    else:
+        if len(sys.argv) != 4:
+            die("Usage: fedora-app-create [--runtime] JSONFILE TARFILE OUTFILE")
+        build_app(sys.argv[1], sys.argv[2], sys.argv[3])
+

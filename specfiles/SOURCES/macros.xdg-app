@@ -1,5 +1,5 @@
 %app	true
-%dist  .fc%{fedora}app
+%dist  .fc%{fedora}~app
 %_prefix	/app
 %_sysconfdir	%{_prefix}/etc
 %python3_sitearch	%{_libdir}/python3.4/site-packages
